@@ -1,16 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from "@/lib/firebase";
 import { useRouter } from "next/navigation";
+import {
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+} from "firebase/auth";
+import { auth } from "@/lib/firebase";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   async function onLogin() {
     setBusy(true);
@@ -19,7 +23,7 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth, email, password);
       router.push("/upload");
     } catch (e: any) {
-      setErr(e.message ?? "Login failed");
+      setErr(e?.message ?? "Login failed");
     } finally {
       setBusy(false);
     }
@@ -29,11 +33,10 @@ export default function LoginPage() {
     setBusy(true);
     setErr(null);
     try {
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
+      await signInWithPopup(auth, new GoogleAuthProvider());
       router.push("/upload");
     } catch (e: any) {
-      setErr(e.message ?? "Google sign-in failed");
+      setErr(e?.message ?? "Google sign-in failed");
     } finally {
       setBusy(false);
     }
@@ -75,10 +78,15 @@ export default function LoginPage() {
         </button>
 
         <p className="text-sm text-slate-600">
-          No account? <a className="text-blue-600 underline" href="/signup">Sign up</a>
+          No account?{" "}
+          <a className="text-blue-600 underline" href="/signup">
+            Sign up
+          </a>
         </p>
 
-        {err && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{err}</div>}
+        {err && (
+          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{err}</div>
+        )}
       </div>
     </main>
   );

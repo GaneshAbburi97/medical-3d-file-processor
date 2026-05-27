@@ -1,5 +1,4 @@
 import { db } from "@/lib/firebase";
-
 import {
   collection,
   doc,
@@ -34,5 +33,5 @@ export async function listJobs(uid: string) {
 
   const snap = await getDocs(q);
 
-  return snap.docs.map((d) => d.data() as any);
+  return snap.docs.map((d) => d.data());
 }

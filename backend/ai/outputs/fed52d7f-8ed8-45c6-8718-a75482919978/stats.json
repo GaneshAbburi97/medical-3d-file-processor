@@ -1,0 +1,18 @@
+{
+  "job_id": "fed52d7f-8ed8-45c6-8718-a75482919978",
+  "runtime_seconds": 0.737,
+  "shape": [
+    128,
+    128,
+    96
+  ],
+  "foreground_voxels": 63144,
+  "foreground_ratio": 0.0401458740234375,
+  "confidence_score_demo": 0.63211669921875,
+  "outputs": {
+    "seg_nifti": "C:\\Users\\prasa\\Documents\\medical-3d-file-processor\\backend\\ai\\outputs\\fed52d7f-8ed8-45c6-8718-a75482919978\\seg.nii.gz",
+    "stats_json": "C:\\Users\\prasa\\Documents\\medical-3d-file-processor\\backend\\ai\\outputs\\fed52d7f-8ed8-45c6-8718-a75482919978\\stats.json",
+    "preview_dir": "C:\\Users\\prasa\\Documents\\medical-3d-file-processor\\backend\\ai\\outputs\\fed52d7f-8ed8-45c6-8718-a75482919978\\preview"
+  },
+  "pretrained_note": "This is a CPU demo pipeline (threshold+morphology). Next phase adds MONAI pretrained bundle download."
+}

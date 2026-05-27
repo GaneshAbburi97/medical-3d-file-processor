@@ -1,16 +1,16 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useRouter } from "next/navigation";
 
 export default function SignupPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
 
   async function onSignup() {
     setBusy(true);
@@ -19,7 +19,7 @@ export default function SignupPage() {
       await createUserWithEmailAndPassword(auth, email, password);
       router.push("/upload");
     } catch (e: any) {
-      setErr(e.message ?? "Signup failed");
+      setErr(e?.message ?? "Signup failed");
     } finally {
       setBusy(false);
     }
@@ -53,10 +53,15 @@ export default function SignupPage() {
         </button>
 
         <p className="text-sm text-slate-600">
-          Already have an account? <a className="text-blue-600 underline" href="/login">Login</a>
+          Already have an account?{" "}
+          <a className="text-blue-600 underline" href="/login">
+            Login
+          </a>
         </p>
 
-        {err && <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{err}</div>}
+        {err && (
+          <div className="rounded-lg bg-red-50 p-3 text-sm text-red-700">{err}</div>
+        )}
       </div>
     </main>
   );

@@ -6,11 +6,17 @@ import { auth } from "@/lib/firebase";
 import { listJobs } from "@/lib/jobs";
 import { useRouter } from "next/navigation";
 
+type Job = {
+  jobId: string;
+  type: "demo" | "upload";
+  status: string;
+};
+
 export default function HistoryPage() {
   const router = useRouter();
-
-  const [items, setItems] = useState<any[]>([]);
+  const [jobs, setJobs] = useState<Job[]>([]);
   const [busy, setBusy] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (user) => {
@@ -18,11 +24,15 @@ export default function HistoryPage() {
         router.push("/login");
         return;
       }
-
-      const jobs = await listJobs(user.uid);
-
-      setItems(jobs);
-      setBusy(false);
+      try {
+        setBusy(true);
+        const rows = (await listJobs(user.uid)) as Job[];
+        setJobs(rows);
+      } catch (e: any) {
+        setError(e?.message ?? "Failed to load history");
+      } finally {
+        setBusy(false);
+      }
     });
 
     return () => unsub();
@@ -31,64 +41,46 @@ export default function HistoryPage() {
   return (
     <main className="min-h-screen bg-slate-50 p-6">
       <div className="mx-auto max-w-3xl space-y-6">
-
         <header className="rounded-xl bg-white p-6 shadow-sm">
-          <h1 className="text-2xl font-semibold text-slate-900">
-            History
-          </h1>
-
-          <p className="mt-1 text-slate-600">
-            Jobs saved in Firestore (per user).
-          </p>
+          <h1 className="text-2xl font-semibold text-slate-900">History</h1>
+          <p className="mt-1 text-slate-600">Jobs from Firestore.</p>
         </header>
 
         <section className="rounded-xl bg-white p-6 shadow-sm">
-
           {busy ? (
-            <p className="text-slate-600">Loading...</p>
-          ) : items.length === 0 ? (
-            <p className="text-slate-600">
-              No jobs yet. Go to Upload and run a demo.
-            </p>
+            <p className="text-slate-600">Loading…</p>
+          ) : error ? (
+            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+              {error}
+            </div>
+          ) : jobs.length === 0 ? (
+            <p className="text-slate-600">No jobs yet. Go to Upload and run a demo.</p>
           ) : (
             <ul className="space-y-3">
-
-              {items.map((job) => (
+              {jobs.map((job) => (
                 <li
                   key={job.jobId}
                   className="flex items-center justify-between rounded-lg border p-3"
                 >
                   <div>
-                    <div className="font-mono text-sm">
-                      {job.jobId}
-                    </div>
-
+                    <div className="font-mono text-sm">{job.jobId}</div>
                     <div className="text-xs text-slate-500">
                       type: {job.type} • status: {job.status}
                     </div>
                   </div>
-
-                  <a
-                    className="text-blue-600 underline"
-                    href={`/results/${job.jobId}`}
-                  >
+                  <a className="text-blue-600 underline" href={`/results/${job.jobId}`}>
                     Open
                   </a>
                 </li>
               ))}
-
             </ul>
           )}
 
-          <div className="mt-4 flex gap-3">
-            <a
-              className="rounded-lg bg-slate-900 px-4 py-2 text-white inline-block"
-              href="/upload"
-            >
+          <div className="mt-4">
+            <a className="rounded-lg bg-slate-900 px-4 py-2 text-white inline-block" href="/upload">
               Back to Upload
             </a>
           </div>
-
         </section>
       </div>
     </main>
